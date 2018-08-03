@@ -1,0 +1,146 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Aug  3 22:03:11 2018
+
+@author: karigor
+"""
+
+
+from tkinter import *
+
+root = Tk()
+root.title("application")
+root.geometry("1140x640+0+0")
+
+heading = Label(root, text = "Developed by Karigor", font=("arial", 40, "bold"), fg="steelblue").pack()
+label1 = Label(root, text = "Write: ", font=("arial", 20, "bold"), fg="black").place(x=10, y=410)
+
+
+def do_it():
+    
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import pandas as pd
+
+    # Importing the dataset
+    dataset = pd.read_csv('Restaurant_Reviews.tsv', delimiter = '\t', quoting = 3)
+
+
+
+    # Cleaning the texts
+    import re
+    import nltk
+    nltk.download('stopwords')
+    from nltk.corpus import stopwords
+    from nltk.stem.porter import PorterStemmer
+    corpus = []
+    for i in range(0, 1000):
+        review = re.sub('[^a-zA-Z]', ' ', dataset['Review'][i])
+        review = review.lower()
+        review = review.split()
+        ps = PorterStemmer()
+        review = [ps.stem(word) for word in review if not word in set(stopwords.words('english'))]
+        review = ' '.join(review)
+        corpus.append(review)
+        
+        
+        
+        
+
+    # Creating the Bag of Words model
+    from sklearn.feature_extraction.text import CountVectorizer
+    cv = CountVectorizer(max_features = 1500)
+    X = cv.fit_transform(corpus).toarray()
+    y = dataset.iloc[:, 1].values
+    
+    
+    # Splitting the dataset into the Training set and Test set
+    from sklearn.cross_validation import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0, random_state = 0)
+    
+    # Fitting Naive Bayes to the Training set
+    from sklearn.naive_bayes import GaussianNB
+    classifier = GaussianNB()
+    classifier.fit(X_train, y_train)
+    
+    mtext = name.get()
+    
+    
+    
+    review = re.sub('[^a-zA-Z]', ' ',mtext)
+    review = review.lower()
+    review = review.split()
+    ps = PorterStemmer()
+    review = [ps.stem(word) for word in review if not word in set(stopwords.words('english'))]
+    review = ' '.join(review)
+    corpus.append(review)
+    
+
+
+
+    from sklearn.feature_extraction.text import CountVectorizer
+    cv = CountVectorizer(max_features = 1500)
+    X = cv.fit_transform(corpus).toarray()
+    
+
+
+    X_test = X[1000:]
+
+
+
+    # Predicting the Test set results
+    y_pred = classifier.predict(X_test)
+
+    if y_pred == 0:
+        mtext = "Neative Text"
+    else:
+        mtext = "Positive Text"
+        
+    mlabel2 = Label(root, text=mtext, font=('Verdana',20)).pack()
+    return
+
+name = StringVar()
+entry_box = Entry(root, font=('Verdana',40), textvariable=name, width=45, bg="lightgreen").place(x=100, y=410)
+
+work = Button(root, text="Work", width=50, height=5, bg="lightblue", command=do_it).place(x=250, y=500)
+
+root.mainloop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
